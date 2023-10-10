@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    white-space: normal;
+}
+.container:hover {
+    cursor: pointer;
+}
+.container .clearIcon {
+    margin-left: auto;
+}
+.container .clearIcon:hover {
+    cursor: pointer;
+}
