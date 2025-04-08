@@ -2,7 +2,15 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  fetchData: () => ipcRenderer.send('fetchData'),
+  on: (channel: string, callback: Function) => {
+    ipcRenderer.on(channel, (_, data) => callback(data))
+  },
+  clearItem: (title: string) => ipcRenderer.send('clear-Item', title),
+  setItem: (data: string, fromInternalCopy: boolean = false) => ipcRenderer.send('set-Item', data, fromInternalCopy),
+  clearAllItems: () => ipcRenderer.send('clearAllItems')
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
@@ -10,11 +18,7 @@ const api = {}
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-    contextBridge.exposeInMainWorld('myPoints', {
-      clearItem: (title) => ipcRenderer.send('clear-Item', title),
-      setItem: (data) => ipcRenderer.send('set-Item', data)
-    })
+    contextBridge.exposeInMainWorld('myPoints', api)
     contextBridge.exposeInMainWorld('read', {
       getArray: (callback) => ipcRenderer.on('read-All', callback)
     })
@@ -25,5 +29,5 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.electron = electronAPI
   // @ts-ignore (define in dts)
-  window.api = api
+  window.myPoints = api
 }

@@ -18,9 +18,10 @@ const CopyBlockItem: React.FC<{data: BlockData}> = (props) => {
     }
     
     function copyToClipboard():void {
-        (window as any).myPoints.setItem(props.data.value);
+        // 标记这是应用内复制
+        (window as any).myPoints.setItem(props.data.value, true);
         setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 1000); // 延长动画时间到1秒
+        setTimeout(() => setIsCopied(false), 1000);
     }
 
     return (
