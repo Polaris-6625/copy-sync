@@ -9,20 +9,22 @@ function CopyBlock(): JSX.Element {
         "value": "",
         "type": "TEXT"
     }
-])
-useEffect(() => {
-  (window as any).read.getArray((_event, value) => {
-    setArray(value)
-  })
-})
+  ])
+
+  useEffect(() => {
+    (window as any).read.getArray((_event, value) => {
+      setArray(value)
+    })
+  }, [])
+
   return (
     <div>
       {
         array.map((item)=>{
          return (
-            <>
+            <div key={item.id}>
               <CopyBlockItem data={item}/>
-            </>
+            </div>
          )
         })
       }

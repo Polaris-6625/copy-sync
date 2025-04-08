@@ -7,6 +7,25 @@ import { clearItem } from './localData/clearItem';
 import { writeDataJSON } from './localData/write';
 
 let mainWindow:any;
+let lastClipboardContent: string = '';
+
+// 监听剪贴板变化
+function startClipboardMonitor() {
+  // 每秒检查一次剪贴板
+  setInterval(() => {
+    const currentContent = clipboard.readText();
+    // 只有当内容变化且不为空时才更新
+    if (currentContent !== lastClipboardContent && currentContent.trim() !== '') {
+      lastClipboardContent = currentContent;
+      writeDataJSON(currentContent).then(() => {
+        if (mainWindow) {
+          mainWindow.webContents.send("read-All", readDataJSON());
+        }
+      });
+    }
+  }, 1000); // 1000ms = 1秒
+}
+
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -100,7 +119,10 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // createWindow()
+  createWindow()
+  
+  // 启动剪贴板监听
+  startClipboardMonitor()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -109,11 +131,6 @@ app.whenReady().then(() => {
   })
   globalShortcut.register('CommandOrControl+I', () => {
     createWindow();
-  })
-  globalShortcut.register('CommandOrControl+Y', async () => {
-    //copyToClipboard();
-    await writeDataJSON(clipboard.readText());
-    mainWindow.webContents.send("read-All",readDataJSON())
   })
   
   const icon = nativeImage.createFromPath('../../resources/icon.png')

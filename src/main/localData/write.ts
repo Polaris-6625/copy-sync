@@ -1,4 +1,6 @@
 import fs from "fs";
+import { join } from "path";
+import { app } from 'electron';
 import { readDataJSON } from "./readAll";
 
 async function writeDataJSON(data: any): Promise<void> {
@@ -13,7 +15,9 @@ async function writeDataJSON(data: any): Promise<void> {
         type: 'TEXT'
     })
     try {
-        fs.writeFileSync("/Users/liuyuyang/Desktop/project/copy-mate/src/main/localData/data.json",JSON.stringify(array))
+        const userDataPath = app.getPath('userData');
+        const dataFilePath = join(userDataPath, 'data.json');
+        fs.writeFileSync(dataFilePath, JSON.stringify(array))
     } catch(err) {
         console.log(err)
     }
