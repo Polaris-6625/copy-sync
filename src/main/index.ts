@@ -129,8 +129,20 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  // 注册快捷键
   globalShortcut.register('CommandOrControl+I', () => {
-    createWindow();
+    if (!mainWindow) {
+      createWindow();
+      return;
+    }
+    
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+      mainWindow.focus();
+    }
   })
   
   const icon = nativeImage.createFromPath('../../resources/icon.png')
