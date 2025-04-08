@@ -6,13 +6,21 @@ import {readDataJSON} from "./localData/readAll";
 import { clearItem } from './localData/clearItem';
 import { writeDataJSON } from './localData/write';
 
-let mainWindow:any;
+// 将 mainWindow 声明为全局变量并添加类型
+let mainWindow: BrowserWindow | null = null;
 let lastClipboardContent: string = '';
+let isInternalCopy: boolean = false;
 
 // 监听剪贴板变化
 function startClipboardMonitor() {
   // 每秒检查一次剪贴板
   setInterval(() => {
+    // 如果是内部复制，跳过这次检查，并重置标记
+    if (isInternalCopy) {
+      isInternalCopy = false;
+      return;
+    }
+
     const currentContent = clipboard.readText();
     // 只有当内容变化且不为空时才更新
     if (currentContent !== lastClipboardContent && currentContent.trim() !== '') {
@@ -27,6 +35,11 @@ function startClipboardMonitor() {
 }
 
 function createWindow(): void {
+  // 如果窗口已经存在，直接返回
+  if (mainWindow) {
+    return;
+  }
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 330,
@@ -39,34 +52,36 @@ function createWindow(): void {
       sandbox: false
     }
   })
-  // globalShortcut.register('CommandOrControl+C', () => {
-  //   // 复制文本到剪贴板
-  //   mainWindow.webContents.copy();
 
-  //   // 获取剪贴板中的文本内容
-  //   const text = clipboard.readText();``
-  //   console.log('Copied text:', text);
+  // 监听窗口关闭事件
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  })
 
-  //   // 这里可以对剪贴板中的文本进行进一步处理
-  //   // ...
-  // });
   ipcMain.on('fetchData', (event) => {
-    // 在这里调用readDataJSON方法获取数据
     const data = readDataJSON();
-    // 将数据发送给渲染线程
     event.sender.send('dataFetched', data);
   });
+
   ipcMain.on('clear-Item', async (event,title) => {
     await clearItem(title)
     event.reply('read-clear-reply', { success: true });
-    mainWindow.webContents.send("read-All",readDataJSON())
+    if (mainWindow) {
+      mainWindow.webContents.send("read-All",readDataJSON())
+    }
   });
-  ipcMain.on('set-Item',async (event,data) => {
-    await clipboard.writeText(data)
+
+  ipcMain.on('set-Item',async (event, data, fromInternalCopy) => {
+    isInternalCopy = fromInternalCopy;
+    await clipboard.writeText(data);
+    lastClipboardContent = data;
   })
+
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-    mainWindow.webContents.send("read-All",readDataJSON())
+    if (mainWindow) {
+      mainWindow.show()
+      mainWindow.webContents.send("read-All",readDataJSON())
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -82,6 +97,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
 let clipboardText:any;
 function copyToClipboard() {
   // 获取当前聚焦的窗口实例
@@ -101,8 +117,6 @@ function copyToClipboard() {
     });
   }
 }
-
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
