@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 16px;
+    background-color: var(--app-bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+        'Noto Sans', sans-serif;
+    overflow: hidden; /* 防止body出现滚动条 */
+}
+
+#root {
+    height: calc(100vh - 32px); /* 减去body的上下padding */
+    overflow-y: auto;
+    padding-right: 8px; /* 为滚动条预留空间 */
+    padding-left: 8px; /* 左侧也加上相同的内边距 */
+} 

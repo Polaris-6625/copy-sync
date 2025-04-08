@@ -1,14 +1,153 @@
+/* 定义主题颜色变量 - 薄荷绿主题 */
+:root {
+    --primary-bg: #e8f3f0;  /* 更柔和的背景色 */
+    --hover-bg: #d8ebe7;    /* hover时的深色 */
+    --border-color: #c5e0d8; /* 边框色 */
+    --text-color: #2d4a44;  /* 深绿色文字 */
+    --icon-color: #7fb9aa;  /* 图标默认色 */
+    --icon-hover-color: #5c8b83; /* 图标悬浮色 */
+    --danger-color: #ff6b6b; /* 柔和的红色 */
+    --app-bg: #f7faf9;      /* 应用整体背景色 */
+    --success-color: #4caf50; /* 成功提示色 */
+    --success-light: #ebf7eb; /* 浅色成功提示背景 */
+}
+
 .container {
     display: flex;
-    flex-direction: row;
-    white-space: normal;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 12px 16px;
+    min-height: 40px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background-color: var(--primary-bg);
+    margin: 4px 0;
+    border-radius: 8px;
+    cursor: pointer;
 }
+
 .container:hover {
-    cursor: pointer;
+    background-color: var(--hover-bg);
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(125, 185, 170, 0.15);
+    border-color: var(--icon-color);
 }
-.container .clearIcon {
-    margin-left: auto;
+
+.container.copied {
+    animation: copiedAnimation 0.5s ease;
 }
-.container .clearIcon:hover {
+
+@keyframes copiedAnimation {
+    0% {
+        background-color: var(--hover-bg);
+    }
+    50% {
+        background-color: rgba(76, 175, 80, 0.2);
+    }
+    100% {
+        background-color: var(--hover-bg);
+    }
+}
+
+.content {
+    flex: 1;
+    margin-right: 32px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: var(--text-color);
+    font-size: 14px;
+    letter-spacing: 0.3px;
+}
+
+.clearIcon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.container:hover .clearIcon {
+    opacity: 0.8;
+}
+
+.clearIcon:hover {
     cursor: pointer;
+    background-color: rgba(255, 107, 107, 0.1);
+    transform: translateY(-50%) scale(1.05);
+    opacity: 1;
+}
+
+.clearIcon svg {
+    width: 16px;
+    height: 16px;
+    transition: all 0.2s ease;
+}
+
+.clearIcon:hover svg path {
+    fill: var(--danger-color);
+}
+
+/* 添加滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--app-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--icon-color);
+}
+
+.copy-tip {
+    position: absolute;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--success-light);
+    color: var(--success-color);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.container.copied .copy-tip {
+    opacity: 1;
+    animation: fadeInOut 1s ease;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
