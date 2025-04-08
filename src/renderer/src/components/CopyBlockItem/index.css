@@ -17,7 +17,7 @@
     align-items: flex-start;
     justify-content: space-between;
     padding: 12px 16px;
-    min-height: 40px;
+    height: 64px; /* 固定高度 */
     border: 1px solid var(--border-color);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -25,6 +25,8 @@
     margin: 4px 0;
     border-radius: 8px;
     cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .container:hover {
@@ -53,13 +55,16 @@
 .content {
     flex: 1;
     margin-right: 32px;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    line-height: 1.6;
-    color: var(--text-color);
     font-size: 14px;
-    letter-spacing: 0.3px;
+    color: var(--text-color);
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 限制两行 */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    max-width: 100%;
 }
 
 .clearIcon {
